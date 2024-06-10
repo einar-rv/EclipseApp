@@ -1,118 +1,82 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
+import {useRef, useEffect} from 'react';
+import { StyleSheet, Text, View, Animated, ImageBackground, Dimensions} from 'react-native';
 
-import React from 'react';
-import type {PropsWithChildren} from 'react';
-import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
-  Text,
-  useColorScheme,
-  View,
-} from 'react-native';
+export default function App() {
+  const moonAnimation = useRef(new Animated.Value(0)).current;
+  useEffect(() => {
+    Animated.loop(
+    Animated.timing(moonAnimation, {
+      toValue: 1,
+      duration: 10000,
+      useNativeDriver: false,
+    }),
+    { iterations: -1 } // loop infinito
+    ).start();
+  }, [moonAnimation]);
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
-
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
-
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
-
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const resetAnimation = () => {
+    moonAnimation.setValue(0);
   };
 
+  const { width: screenWidth, height: screenHeight } = Dimensions.get('window');
+
+  const moonLeft = moonAnimation.interpolate({
+    inputRange: [0,1],
+    outputRange: ['0%', '90%']
+  });
+
+  const moonBottom = moonAnimation.interpolate({
+    inputRange: [0,1],
+    outputRange: [0, screenHeight * 0.9]
+  });
+
+  const moonColor = moonAnimation.interpolate({
+    inputRange: [0, 0.25, 0.5, 0.75, 1],
+    outputRange: ['yellow', 'orange', 'black', 'orange', 'yellow']
+  });
+
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <ImageBackground source={require('./assets/img/mx-satelital-2.jpg')} style={styles.container}>
+    <View style={styles.container}>
+      <Text style={styles.titulo}>Eclipse total México 2024 </Text>
+      <View style={styles.sun} /><View/>
+      <Animated.View style={[styles.moon, {left: moonLeft, bottom: moonBottom, backgroundColor: moonColor}]} />
+    </View>
+    </ImageBackground>
   );
 }
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+    width: '100%',
+    height: '100%',
+    alignItems: 'center',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
+  titulo:{
+    color: 'black',
+    alignItems: 'center',
+    fontSize: 30,
+    marginTop: 20, 
+    fontWeight: 'bold',
+    backgroundColor: 'white',
+    borderWidth: 1, 
+    alignContent: 'center',
   },
-  sectionDescription: {
-    marginTop: 8,
-    fontSize: 18,
-    fontWeight: '400',
+  moon: {
+    position: 'absolute',
+    bottom: '50%',
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    zIndex: 1,
   },
-  highlight: {
-    fontWeight: '700',
+  sun: {
+    position: 'absolute',
+    bottom: '50%',
+    width: 70,
+    height: 70,
+    borderRadius: 35,
+    backgroundColor: 'orange',
   },
 });
-
-export default App;
